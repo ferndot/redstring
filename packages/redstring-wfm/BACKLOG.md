@@ -96,3 +96,10 @@ claimed to matter.
 
 Only relevant if W1 resolves to (b), and then only as its own extra and slice. Not on
 the default import path.
+
+### W15. This package's tests are not run by CI
+
+The root CI `pytest` job runs the root `tests/` tree. `packages/redstring-wfm/tests`
+is run only by hand with `uv run pytest` from that directory, so a regression here
+can land green. Wire a CI job, or a root `pytest` path, before the first slice that
+ships behaviour. Slice 0 adds only the import-boundary test.

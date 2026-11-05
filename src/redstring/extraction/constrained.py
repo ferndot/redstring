@@ -63,13 +63,15 @@ descriptions -- which are prompt, not documentation -- come along unchanged.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 from pydantic import create_model
 
 from redstring.extraction.schema import ExtractedEntity, ExtractedRelationship, Extraction
 
 if TYPE_CHECKING:
+    from typing_extensions import TypeForm
+
     from redstring.extraction.domains.models import DomainSchema
 
 
@@ -110,7 +112,7 @@ def constrained_extraction(schema: DomainSchema) -> type[Extraction]:
     )
 
 
-def _literal(ids: list[str]) -> object:
+def _literal(ids: list[str]) -> TypeForm[Any]:
     """`Literal[...]` over the ids, deduplicated, in declaration order.
 
     Deduplicated because two entity types with one id is a schema the loader
@@ -123,7 +125,7 @@ def _literal(ids: list[str]) -> object:
     it.
     """
     unique = list(dict.fromkeys(ids))
-    return Literal[tuple(unique)]
+    return cast("TypeForm[Any]", Literal[tuple(unique)])
 
 
 def _class_prefix(schema: DomainSchema) -> str:
