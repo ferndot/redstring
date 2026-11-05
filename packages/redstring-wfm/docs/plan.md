@@ -29,18 +29,9 @@ paper's ablations.
 | Reflection | Loop returns answer, Final flag, round count, accumulated evidence. Reject/Open is a generator evidence policy, not a loop state | adr/0002 |
 | Time | Dropped from v1 (paper has no temporal component; edges carry no time) | adr/0002 |
 | Retraction | Not implemented. Known input limit (BACKLOG B32) | adr/0002 |
+| Training backend | Torch trains (autograd); NumPy does inference and is the oracle | adr/0003 |
 
-Two decisions remain open and block slices 5 and 6:
-
-- **Training backend.** Slices 5-6 need gradients. NumPy has no autograd, so
-  either (a) hand-derived backward passes for Eq 3-6 and the losses, checked
-  against finite differences, or (b) torch for training with NumPy kept as
-  the inference reference and oracle. The original plan had NumPy only with
-  an optional torch trainer last; that ordering left the losses with no
-  optimiser until slice 11. Pick (a) or (b) before slice 5.
-- **Seed/rank scope under the paper's silence** is resolved in adr/0002, but
-  the **max-nodes cap M** value is not yet chosen. It is set empirically in
-  slice 6.
+One decision remains open and blocks nothing before slice 6: the max-nodes cap M, set empirically in slice 6.
 
 ## Slices
 
@@ -66,10 +57,10 @@ Each slice is one PR. Commits within a slice stay small.
    cap, re-induced per reflection round. Oracles: a diamond-shaped graph
    (shortest path, not first-found), and a case where a passage is reachable
    only through a second hop.
-5. **Losses and training path.** `L_align` (InfoNCE, cosine, τ), `L_TransE`
+5. **Losses and training path (torch).** `L_align` (InfoNCE, cosine, τ), `L_TransE`
    (tail corruption only, L2, on propagated h_e), `L_var` (hinge over logits
-   π against ε), weight decay λ3. **Gate: training backend decision.**
-   Gradients checked by finite differences.
+   π against ε), weight decay λ3. Forward parity with the NumPy reference
+   checked to a stated tolerance (ADR 0003).
 6. **Two-phase curriculum and synthetic multi-hop regression.** Phase I
    trains `W_p` and lookup tables under `L_align` on layer-0 states. Phase II
    unfreezes everything. Synthetic graphs with known multi-hop answers. Runs
@@ -90,8 +81,8 @@ Each slice is one PR. Commits within a slice stay small.
    agree. Summation order is fixed so the result is bit-exact; a tolerance is
    used only where bit-exactness is impossible, and that exception is written
    down.
-10. **Optional torch trainer.** Only if decision (b) was taken, or if
-    training at scale needs it. Own extra; not on the default import path.
+10. **Torch training path is complete.** Per ADR 0003 this is the training
+    path, not an optional extra. Lives in its own extra, off the default import path.
 
 ## Upstream redstring changes
 

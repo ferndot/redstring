@@ -5,14 +5,6 @@ the root `BACKLOG.md` (B166, B167). Each entry says what is deferred and why.
 
 ## Blocking a slice
 
-### W1. The training backend is undecided (blocks slice 5)
-
-Slices 5-6 need gradients. NumPy has no autograd, so the choice is (a)
-hand-derived backward passes for Eq 3-6 and the losses, checked against finite
-differences, or (b) torch for training, with NumPy kept as the inference
-reference. The earlier plan put the optimiser last, so the losses had nothing to
-optimise until slice 11. Decide before slice 5 starts. See `docs/plan.md`.
-
 ### W2. The max-nodes cap M has no value (set in slice 6)
 
 ADR 0002 A7. The paper gives no cap and hub entities can explode the induced
@@ -92,14 +84,7 @@ Reverse edges (A11), link types (A12), and weight sharing across layers (A2) are
 fixed by ADR 0002 and not varied in v1. Each needs an ablation before its choice is
 claimed to matter.
 
-### W14. The optional torch trainer
+### W14. Torch training path is its own extra
 
-Only relevant if W1 resolves to (b), and then only as its own extra and slice. Not on
-the default import path.
-
-### W15. This package's tests are not run by CI
-
-The root CI `pytest` job runs the root `tests/` tree. `packages/redstring-wfm/tests`
-is run only by hand with `uv run pytest` from that directory, so a regression here
-can land green. Wire a CI job, or a root `pytest` path, before the first slice that
-ships behaviour. Slice 0 adds only the import-boundary test.
+Resolved by ADR 0003: torch trains, NumPy infers. Kept as a backlog note only so
+the extra's packaging (default import path free of torch) is verified when it lands.
