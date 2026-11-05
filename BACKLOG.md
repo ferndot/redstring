@@ -264,6 +264,23 @@ with whatever slice first needs it in anger.
 
 ---
 
+### B166. Chunks keep absorbed entity ids after a merge, so `get_by_entity` misses them
+
+`projections/chunk.py` handles only `DocumentChunked` (`_apply_chunking`, line 46).
+Nothing rewrites `StoredChunk.entity_ids` when an `EntitiesMerged` is folded, so a
+chunk extracted before a merge still names the absorbed id. `ChunkReader.get_by_entity`
+on the canonical id then returns nothing for that chunk, while the graph projection
+resolves relationship endpoints through aliases (`projections/graph.py:152`). The two
+read models disagree after a merge.
+
+Not fixed here. The fix needs a decision: rewrite chunk links in the chunk projection
+(a second write path), or resolve at read time through `resolve_entity_ids`. Found while
+planning `packages/redstring-wfm`, which depends on `get_by_entity` to find passages for
+an entity. Confirmed by reading the projection and by a search for any code that
+canonicalises `entity_ids`; not yet reproduced by a test.
+
+---
+
 ## 2. Things that are unverified
 
 Code that may well be correct, with nothing that would tell us if it were not.
@@ -3393,3 +3410,19 @@ enough to review against the loop it touches, and because the containment
 property was the *first* case to demand the shared suite rather than an
 obvious pre-existing gap — it was found by hypothesis, mid-fix, when the
 sibling was checked for the same defect and turned out clean.
+
+---
+
+### B167. `reciprocal_rank_fusion` is not exported from the top-level API
+
+`redstring.__all__` does not include `reciprocal_rank_fusion` or `RRF_K`. Both are
+defined in `domain/fusion.py` and listed only in that module's own `__all__`, which is
+a dotted path and therefore internal per `CLAUDE.md`. `Retriever` and `ChunkRetriever`
+both use it, so callers can only reach the fusion by reimplementing it.
+
+`packages/redstring-wfm` needs it for seed selection over entity and passage hits
+(`packages/redstring-wfm/docs/adr/0002`, A5). Until this is exported, that package keeps
+a local copy of the three-line formula, marked with its own BACKLOG entry to delete the
+copy. Exporting it is an ordinary public addition under ADR 0006: the signature uses only
+`Hashable` and `Sequence`, so no new types enter the closure. It still needs an `__all__`
+entry and the public-API gate to pass.
