@@ -1,6 +1,6 @@
 # redstring-wfm: handoff
 
-Branch: `claude/wfm-system-implementation-0aa7f4-bln9hn`. Everything is pushed.
+On `main` and on `claude/wfm-system-implementation-0aa7f4-bln9hn`, which are at the same commit. Everything is pushed.
 Read in this order: `docs/plan.md`, then `docs/adr/0001`–`0004`, then `BACKLOG.md`.
 
 ## Where things stand
