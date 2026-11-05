@@ -1,6 +1,6 @@
 # ADR 0002: Assumptions where the WFM paper is silent or inconsistent
 
-Status: accepted. Every item below is an assumption of this implementation,
+Status: accepted; A7 amended by ADR 0004. Every item below is an assumption of this implementation,
 **not** a paper result, and each is a candidate for ablation.
 
 ## Context
@@ -34,7 +34,7 @@ silently. This ADR records the corrected reading and every remaining fill.
 | A4 | Ranking scope | TopK over passages in the induced subgraph | Eq 7 ranks over all of D, but only subgraph passages have propagated states |
 | A5 | Seeds | RRF over entity hits and passage hits, with RRF_K = 60 | §3.2 says retrieval "identifies seed entities and passages". The paper seeds both kinds, so no mapping of passage hits to entities is applied |
 | A6 | Subgraph radius | L hops (default 3) over the bipartite entity–passage and entity–entity graph | §3.2 implies deeper layers need a radius at least L; a smaller radius wastes layers |
-| A7 | Max-nodes cap M | Set empirically in slice 6; no value is claimed | Paper gives no cap; hub nodes can explode the subgraph |
+| A7 | Max-nodes cap M | Amended by ADR 0004: default 200, swept in slice 6 | Paper gives no cap; hub nodes can explode the subgraph |
 | A8 | Re-induction | Seeds and subgraph are recomputed per round from the round's query | Eq 7 indexes by q(t) |
 | A9 | Evidence | `C(t) = C(t-1) ∪ D(t)`, accumulated across rounds | §3.3 |
 | A10 | Generator query | The generator receives the original `q`, not `q(t)` | §3.3 |

@@ -30,8 +30,9 @@ paper's ablations.
 | Time | Dropped from v1 (paper has no temporal component; edges carry no time) | adr/0002 |
 | Retraction | Not implemented. Known input limit (BACKLOG B32) | adr/0002 |
 | Training backend | Torch trains (autograd); NumPy does inference and is the oracle | adr/0003 |
+| Max-nodes cap | M = 200, nearest-seed truncation, ties by id, counted; swept in slice 6 | adr/0004 |
 
-One decision remains open and blocks nothing before slice 6: the max-nodes cap M, set empirically in slice 6.
+The max-nodes cap is decided provisionally (ADR 0004: M = 200, deterministic truncation, counted); slice 6 sweeps it.
 
 ## Slices
 

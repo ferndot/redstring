@@ -5,13 +5,11 @@ the root `BACKLOG.md` (B166, B167). Each entry says what is deferred and why.
 
 ## Blocking a slice
 
-### W2. The max-nodes cap M has no value (set in slice 6)
+### W2. The max-nodes cap M is provisional (sweep in slice 6)
 
-ADR 0002 A7. The paper gives no cap and hub entities can explode the induced
-subgraph. The value is chosen empirically on the synthetic regression set, and
-the choice is recorded with its measurements, not claimed from the paper.
-
-## Temporary code to remove
+ADR 0004 sets M = 200 as a judgement, not a measurement. Slice 6 sweeps M = 50, 200
+and 1000 on the synthetic regression set. If the sweep moves the default, that is a
+new ADR. The truncation counter and deterministic truncation are built in slice 4.
 
 ### W3. Local copy of reciprocal rank fusion (remove when root B167 ships)
 
